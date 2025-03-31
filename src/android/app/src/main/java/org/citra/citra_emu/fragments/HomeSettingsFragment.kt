@@ -160,8 +160,8 @@ class HomeSettingsFragment : Fragment() {
                 { mainActivity.ciaFileInstaller.launch(true) }
             ),
             HomeSetting(
-                R.string.setup_system_files,
-                R.string.setup_system_files_description,
+                R.string.system_files,
+                R.string.system_files_description,
                 R.drawable.ic_system_update,
                 {
                     exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)

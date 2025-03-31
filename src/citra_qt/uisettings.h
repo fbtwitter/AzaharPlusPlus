@@ -113,6 +113,7 @@ struct Values {
     Settings::Setting<GameListText> game_list_row_2{GameListText::FileName, Settings::Keys::row2};
     Settings::Setting<bool> game_list_hide_no_icon{false, Settings::Keys::hideNoIcon};
     Settings::Setting<bool> game_list_single_line_mode{false, Settings::Keys::singleLineMode};
+    Settings::Setting<bool> show_3ds_files_warning{false, "show_3ds_files_warning"};
 
     // Compatibility List
     Settings::Setting<bool> show_compat_column{true, Settings::Keys::show_compat_column};

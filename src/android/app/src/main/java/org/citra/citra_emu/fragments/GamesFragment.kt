@@ -123,6 +123,7 @@ class GamesFragment : Fragment() {
         doCompression(this, gamesViewModel, pendingCompressInvocation, uri, shouldCompress)
         pendingCompressInvocation = null
     }
+    private var show3DSFileWarning: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

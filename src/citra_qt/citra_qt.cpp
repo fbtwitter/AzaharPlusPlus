@@ -3688,11 +3688,10 @@ void GMainWindow::OnCIAInstallReport(Service::AM::InstallStatus status, QString 
         QMessageBox::critical(this, tr("Invalid File"), tr("%1 is not a valid CIA").arg(filename));
         break;
     case Service::AM::InstallStatus::ErrorEncrypted:
-        QMessageBox::critical(this, tr("CIA Encrypted"),
-                              tr("Your CIA file is encrypted.<br/>"
-                                 "<a "
-                                 "href='https://azahar-emu.org/blog/game-loading-changes/'>"
-                                 "Please check our blog for more info.</a>"));
+        QMessageBox::critical(this, tr("Encrypted File"),
+                              tr("%1 must be decrypted "
+                                 "before being used with Azahar. A real 3DS is required.")
+                                  .arg(filename));
         break;
     case Service::AM::InstallStatus::ErrorFileNotFound:
         QMessageBox::critical(this, tr("Unable to find File"),

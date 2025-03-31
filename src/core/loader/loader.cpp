@@ -115,12 +115,14 @@ static std::unique_ptr<AppLoader> GetFileLoader(Core::System& system, FileUtil::
         return std::make_unique<AppLoader_NCCH>(system, std::move(file), filepath);
 
     case FileType::ARTIC: {
+#ifdef todotodo
         Apploader_Artic::ArticInitMode mode = Apploader_Artic::ArticInitMode::NONE;
         if (filename.starts_with("articinio://")) {
             mode = Apploader_Artic::ArticInitMode::O3DS;
         } else if (filename.starts_with("articinin://")) {
             mode = Apploader_Artic::ArticInitMode::N3DS;
         }
+#endif
         auto strToUInt = [](const std::string& str) -> int {
             char* pEnd = NULL;
             unsigned long ul = ::strtoul(str.c_str(), &pEnd, 10);
@@ -139,7 +141,11 @@ static std::unique_ptr<AppLoader> GetFileLoader(Core::System& system, FileUtil::
                 server_addr = server_addr.substr(0, pos);
             }
         }
+#ifdef todotodo
         return std::make_unique<Apploader_Artic>(system, server_addr, port, mode);
+#else
+        return std::make_unique<Apploader_Artic>(system, server_addr, port);
+#endif
     }
 
     default:
