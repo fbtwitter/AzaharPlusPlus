@@ -179,4 +179,7 @@ std::unique_ptr<FileUtil::IOFileBase> OpenUniqueCryptoFile(const std::string& fi
 
 bool IsFullConsoleLinked();
 void UnlinkConsole();
+
+std::vector<std::string> GetAppFilepaths();
+int RemoveAzaharEncryption(const std::string& path);
 } // namespace HW::UniqueData

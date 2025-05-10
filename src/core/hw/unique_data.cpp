@@ -313,8 +313,24 @@ static std::array<u8, 32> hexToBin(const std::string& hex) {
     return bytes;
 }
 
+// Broader than a plain NCCH/NCSD magic check: also recognizes a handful of other
+// console-unique-crypto-wrapped file kinds (download play, NARC, DS internet) that share
+// this same digest-scanning mechanism.
+static bool isHeaderReadable(NCCH_Header ncch_header) {
+    if (FileUtil::MakeMagic('N', 'C', 'S', 'D') != ncch_header.magic &&
+        FileUtil::MakeMagic('N', 'C', 'C', 'H') != ncch_header.magic &&
+        memcmp("NDHT", ncch_header.signature, 4) != 0 &&
+        memcmp("dlplay", ncch_header.signature, 6) != 0 &&
+        memcmp("NARC", ncch_header.signature + 128, 4) != 0 &&
+        memcmp("DS INTERNET", ncch_header.signature, 11) != 0) {
+        return false;
+    }
+
+    return true;
+}
+
 // Tries a candidate digest (key+iv derived from it) against `filename`. If it decrypts to a
-// readable NCCH header, the key/iv are written out and true is returned.
+// readable header, the key/iv are written out and true is returned.
 static bool testDigest(const std::string& sdigest, const std::string& filename,
                        std::vector<u8>& out_key, std::vector<u8>& out_iv) {
     u8 digest[CryptoPP::SHA256::DIGESTSIZE];
@@ -337,8 +353,7 @@ static bool testDigest(const std::string& sdigest, const std::string& filename,
         return false;
     }
 
-    if (FileUtil::MakeMagic('N', 'C', 'S', 'D') != ncch_header.magic &&
-        FileUtil::MakeMagic('N', 'C', 'C', 'H') != ncch_header.magic) {
+    if (!isHeaderReadable(ncch_header)) {
         return false;
     }
 
@@ -409,9 +424,9 @@ static void saveDigest(const std::string& digest) {
 }
 
 // Scans known digests (plus the current console's own canonical digest, if linked) against
-// `filename`, returning the first key/iv pair that decrypts it to a readable NCCH header.
-// This lets files encrypted under a different (but previously-seen) console's unique data
-// still be opened, which is what AzaharPlus's "Azahar encryption" compatibility relies on.
+// `filename`, returning the first key/iv pair that decrypts it to a readable header. This
+// lets files encrypted under a different (but previously-seen) console's unique data still
+// be opened, which is what AzaharPlus's "Azahar encryption" compatibility relies on.
 static bool FindUniqueCryptoKeyIV(const std::string& filename, UniqueCryptoFileID id,
                                   std::vector<u8>& out_key, std::vector<u8>& out_iv) {
     LoadOTP();
@@ -503,6 +518,107 @@ void UnlinkConsole() {
     FileUtil::Delete(GetLocalFriendCodeSeedBPath());
 
     InvalidateSecureData();*/
+}
+
+
+static bool isAppEncrypted(const std::string& path)
+{
+    FileUtil::IOFile file(path, "rb");
+	
+	if (!file.IsOpen()) {
+		return false;
+	}
+
+	NCCH_Header ncch_header;
+	
+	if (file.ReadBytes(&ncch_header, sizeof(NCCH_Header)) != sizeof(NCCH_Header)) {
+		return false;
+	}
+	
+	return !isHeaderReadable(ncch_header);
+}
+
+std::vector<std::string> GetAppFilepaths()
+{
+	std::vector<std::string> ret;
+	
+    FileUtil::FSTEntry data_dir;
+    std::vector<FileUtil::FSTEntry> files;
+    FileUtil::ScanDirectoryTree(FileUtil::GetUserPath(FileUtil::UserPath::UserDir), data_dir, 2048);
+    FileUtil::GetAllFilesFromNestedEntries(data_dir, files);
+	
+	for(int i=0; i<files.size(); i++)
+	{
+		std::string file = files[i].physicalName;
+		
+		if(file.ends_with(".app")
+		&& isAppEncrypted(file))
+		{
+			ret.push_back(file);
+		}
+	}
+	
+	return ret;
+}
+
+int RemoveAzaharEncryption(const std::string& path)
+{
+	int ret = 0;
+	LOG_ERROR(HW, "RemoveAzaharEncryption {}", path);
+	
+	std::string sdigest = findDigest(path);
+	
+	if(sdigest.length() == 64)
+	{
+		u8 digest[CryptoPP::SHA256::DIGESTSIZE];
+		memcpy(digest, hexToBin(sdigest).data(), 32);
+		
+		std::vector<u8> key(0x10);
+		std::vector<u8> ctr(0x10);
+		memcpy(key.data(), digest, 0x10);
+		memcpy(ctr.data(), digest + 0x10, 12);
+
+//		LOG_ERROR(HW, "digest dump {}", binToHex(digest));
+
+		FileUtil::CryptoIOFile cfile(path, "rb", key, ctr, 0);
+		FileUtil::Delete(path + ".decrypting");
+		FileUtil::IOFile dfile(path + ".decrypting", "wb");
+		char* buffer = new char[1000000];
+		int tocopy = cfile.ReadBytes(buffer, 1000000);
+		int written = 0;
+		
+		while(tocopy > 0)
+		{
+			written = dfile.WriteBytes(buffer, tocopy);
+			
+			if(written != tocopy)
+			{
+				ret = 1;
+				LOG_ERROR(HW, "copy error {}", path);
+				break;
+			}
+			
+			tocopy = cfile.ReadBytes(buffer, 1000000);
+		}
+		
+		cfile.Close();
+		dfile.Close();
+		delete[] buffer;
+		
+		if(ret == 0)
+		{
+			FileUtil::Rename(path + ".decrypting", path + ".decrypted");
+			FileUtil::Rename(path, path + ".encrypted");
+			FileUtil::Rename(path + ".decrypted", path);
+		}
+	}
+	else
+	{
+		ret = 2;
+		LOG_ERROR(HW, "no digest found {}", path);
+	}
+	
+	return ret;
 }
 
 } // namespace HW::UniqueData
