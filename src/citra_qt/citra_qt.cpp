@@ -2311,6 +2311,7 @@ void GMainWindow::ConnectMenuEvents() {
     connect_menu(ui->action_Install_CIA, &GMainWindow::OnMenuInstallCIA);
     connect_menu(ui->action_Connect_Artic, &GMainWindow::OnMenuConnectArticBase);
     connect_menu(ui->action_Remove_Azahar_Encryption, &GMainWindow::OnMenuRemoveAzaharEncryption);
+    connect_menu(ui->action_Revert_Encryption_Removal, &GMainWindow::OnMenuRevertEncryptionRemoval);
 //    connect_menu(ui->action_Setup_System_Files, &GMainWindow::OnMenuSetUpSystemFiles);
     for (u32 region = 0; region < Core::NUM_SYSTEM_TITLE_REGIONS; region++) {
         connect_menu(ui->menu_Download_System_Files->actions().at(region),
@@ -3681,9 +3682,29 @@ void GMainWindow::OnDownloadSystemFilesMenu(u32 region) {
 	UpdateBootHomeMenuState();
 }
 
+void GMainWindow::OnMenuRevertEncryptionRemoval() {
+	game_list->SetDirectoryWatcherEnabled(false);
+	int res = HW::UniqueData::RevertEncryptionRemoval();
+	game_list->SetDirectoryWatcherEnabled(true);
+
+	if(res == 0)
+		QMessageBox::information(this, tr("AzaharPlus"), tr("Nothing to revert"));
+	else
+		QMessageBox::information(this, tr("AzaharPlus"), tr("%1 file(s) successfully reverted").arg(res));
+}
+
 void GMainWindow::OnMenuRemoveAzaharEncryption() {
     const std::vector<std::string> paths = HW::UniqueData::GetAppFilepaths();
-
+	
+	if(paths.size() == 0)
+	{
+		QMessageBox::information(this, tr("AzaharPlus"), tr("Nothing to decrypt"));
+		return;
+	}
+	
+    game_list->SetDirectoryWatcherEnabled(false);
+	
+	std::map<int, int> results;
     QProgressDialog progress(tr("Removing Azahar encryption..."), tr("Abort"), 0, paths.size(), this);
     progress.setWindowModality(Qt::WindowModal);
 
@@ -3696,12 +3717,14 @@ void GMainWindow::OnMenuRemoveAzaharEncryption() {
 			break;
 		}
 
-		HW::UniqueData::RemoveAzaharEncryption(paths[i]);
+		results[HW::UniqueData::RemoveAzaharEncryption(paths[i])]++;
 	}
+
+	game_list->SetDirectoryWatcherEnabled(true);
 
 	progress.setValue(paths.size());
 
-	QMessageBox::information(this, tr("AzaharPlus"), tr("Successfully removed Azahar encryption"));
+	QMessageBox::information(this, tr("AzaharPlus"), tr("%1 file(s) succesfully decrypted\n%2 file(s) file system errors\n%3 file(s) unable to be decrypted").arg(results[0]).arg(results[1]).arg(results[2]));
 }
 
 void GMainWindow::OnMenuBootHomeMenu(u32 region) {
