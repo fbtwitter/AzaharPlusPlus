@@ -262,6 +262,9 @@ private slots:
     void OnCIAInstallFinished();
     void OnMenuRecentFile();
     void OnConfigure();
+    void OnExportZipPass();
+    void OnImportZipPass();
+    void OnClearStreetPassConfig();
     void OnLoadAmiibo();
     void OnRemoveAmiibo();
     void OnOpenCitraFolder();

@@ -257,6 +257,10 @@ object NativeLibrary {
     private external fun uninstallTitle(titleId: Long, mediaType: Int): Boolean
     fun uninstallTitle(titleId: Long, mediaType: Game.MediaType): Boolean =
         uninstallTitle(titleId, mediaType.value)
+    external fun downloadTitleFromNus(title: Long): InstallStatus
+    external fun importZipPass(path: String): Int
+    external fun exportZipPass(path: String): Int
+    external fun clearStreetPassConfig(): Int
 
     external fun nativeFileExists(path: String): Boolean
 

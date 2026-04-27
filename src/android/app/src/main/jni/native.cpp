@@ -44,6 +44,7 @@
 #include "core/hw/unique_data.h"
 #include "core/loader/loader.h"
 #include "core/savestate.h"
+#include "core/zip_pass.h"
 #include "core/system_titles.h"
 #include "jni/android_common/android_common.h"
 #include "jni/applets/mii_selector.h"
@@ -742,6 +743,19 @@ void Java_org_citra_citra_1emu_NativeLibrary_uninstallSystemFiles(JNIEnv* env,
     Core::UninstallSystemFiles(old3ds ? Core::SystemTitleSet::Old3ds
                                       : Core::SystemTitleSet::New3ds);
 }
+
+jint Java_org_citra_citra_1emu_NativeLibrary_importZipPass(JNIEnv *env, jobject thiz, jstring path) {
+    return Core::importZipPass(GetJString(env, path));
+}
+
+jint Java_org_citra_citra_1emu_NativeLibrary_exportZipPass(JNIEnv *env, jobject thiz, jstring path) {
+    return Core::exportZipPass(GetJString(env, path));
+}
+
+jint Java_org_citra_citra_1emu_NativeLibrary_clearStreetPassConfig(JNIEnv *env, jobject thiz) {
+    return Core::clearStreetPassConfig();
+}
+
 
 [[maybe_unused]] static bool CheckKgslPresent() {
     constexpr auto KgslPath{"/dev/kgsl-3d0"};

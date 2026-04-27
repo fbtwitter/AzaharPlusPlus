@@ -525,3 +525,5 @@ else()
     target_compile_definitions(xxhash PRIVATE XXH_VECTOR=XXH_SCALAR)
     message(STATUS "Disabling SIMD for xxHash")
 endif()
+
+add_subdirectory(libzip)
