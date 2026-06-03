@@ -158,6 +158,8 @@ private:
     void InitializeDebugWidgets();
     void InitializeRecentFileMenuActions();
     void InitializeSaveStateMenuActions();
+    void InitializeAmiibos();
+    void UpdateAmiibos();
 
     void SetDefaultUIGeometry();
     void SyncMenuUISettings();
@@ -261,6 +263,9 @@ private slots:
     void OnCompressFinished(bool is_compress, bool success);
     void OnCIAInstallFinished();
     void OnMenuRecentFile();
+    void OnPreviousAmiibo();
+    void OnMenuAmiiboAction();
+    void OnMenuAmiiboFileAction();
     void OnConfigure();
     void OnExportZipPass();
     void OnImportZipPass();
