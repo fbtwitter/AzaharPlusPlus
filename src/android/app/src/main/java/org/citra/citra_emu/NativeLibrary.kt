@@ -254,6 +254,7 @@ object NativeLibrary {
     external fun playTimeManagerGetPlayTime(titleId: Long): Long
     external fun playTimeManagerGetCurrentTitleId(): Long
 
+    external fun resetProgramId()
     private external fun uninstallTitle(titleId: Long, mediaType: Int): Boolean
     fun uninstallTitle(titleId: Long, mediaType: Game.MediaType): Boolean =
         uninstallTitle(titleId, mediaType.value)

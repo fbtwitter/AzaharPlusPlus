@@ -12,6 +12,9 @@
 
 namespace Loader {
 
+std::string getProgramId();
+void resetProgramId();
+
 /// Loads an NCCH file (e.g. from a CCI, or the first NCCH in a CXI)
 class AppLoader_NCCH final : public AppLoader {
 public:
