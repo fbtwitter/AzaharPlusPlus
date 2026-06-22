@@ -1636,6 +1636,9 @@ void GMainWindow::ShutdownGame() {
         return;
     }
 
+	Loader::resetProgramId();
+	Core::importQueuedZipPass();
+
     if (ui->action_Fullscreen->isChecked()) {
         HideFullscreen();
     }
@@ -4588,6 +4591,8 @@ int LaunchQtFrontend(int argc, char* argv[]) {
 
     // Process any pending events before executing the app (prevents freeze-on–boot on macOS)
     app.processEvents();
+
+	Core::importQueuedZipPass();
 
     int result = app.exec();
     return result;
