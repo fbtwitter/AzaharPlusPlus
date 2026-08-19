@@ -1,8 +1,14 @@
-<b>AzaharPlus</b> is a fork of the Azahar 3DS emulator that restores some features.
+<b>AzaharPlusPlus</b> is a fork of the Azahar 3DS emulator that stays in sync with current Azahar while carrying forward the features from AzaharPlus.
 
-Each version is the same as the corresponding version of Azahar exept for these features:
-- Support of 3DS files. If a file works with earlier Citra forks, it works with AzaharPlus.
+Each version is the same as the corresponding version of Azahar except for these features:
+- Compatibility with all game files. If a file works with any Citra fork, it works with AzaharPlusPlus.
 - Ability to download system files from official servers. No need for an actual 3DS.
+- Compatibility with older CPUs (no SSE4.2 required)
+- Compatibility with Android 9
+- ZipPass: A new way to exchange StreetPass data through zip files
+- Built in cheats
+- Amiibo generation
+- Better multiplayer compatibility with other Citra forks
 
 Below is the readme from Azahar, unchanged.
 
