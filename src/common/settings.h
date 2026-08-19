@@ -662,7 +662,7 @@ struct Values {
     Setting<bool> break_on_unmapped_memory_access{false, Keys::break_on_unmapped_memory_access};
 
     // WebService
-    Setting<std::string> web_api_url{"", Keys::web_api_url};
+    Setting<std::string> web_api_url{"http://88.198.47.46:5000", Keys::web_api_url};
     Setting<std::string> network_token{"", Keys::network_token};
 
     // Miscellaneous
