@@ -187,32 +187,25 @@ class LobbyBrowser(context: Context) : BottomSheetDialog(context) {
         }
 
         fun filterAndSearch() {
-            if (binding.searchText.text.toString()
-                    .isEmpty() && binding.chipGroup.checkedChipId == View.NO_ID
-            ) {
+            val checkedChipIds = binding.chipGroup.checkedChipIds
+
+            if (binding.searchText.text.toString().isEmpty() && checkedChipIds.isEmpty()) {
                 adapter.updateRooms(NetPlayManager.getPublicRooms())
                 return
             }
 
-            val baseList = NetPlayManager.getPublicRooms()
-            val filteredList: List<NetPlayManager.RoomInfo> =
-                when (binding.chipGroup.checkedChipId) {
-                    R.id.chip_hide_full -> {
-                        baseList.filter { it.members.size < it.maxPlayers }
-                    }
+            var filteredList: List<NetPlayManager.RoomInfo> = NetPlayManager.getPublicRooms()
+            if (R.id.chip_hide_empty in checkedChipIds) {
+                filteredList = filteredList.filter { it.members.isNotEmpty() }
+            }
+            if (R.id.chip_hide_full in checkedChipIds) {
+                filteredList = filteredList.filter { it.members.size < it.maxPlayers }
+            }
+            if (R.id.chip_hide_locked in checkedChipIds) {
+                filteredList = filteredList.filter { !it.hasPassword }
+            }
 
-                    R.id.chip_hide_empty -> {
-                        baseList.filter {
-                            it.members.isNotEmpty()
-                        }
-                    }
-
-                    else -> baseList
-                }
-
-            if (binding.searchText.text.toString()
-                    .isEmpty() && binding.chipGroup.checkedChipId != View.NO_ID
-            ) {
+            if (binding.searchText.text.toString().isEmpty() && checkedChipIds.isNotEmpty()) {
                 adapter.updateRooms(filteredList)
                 return
             }

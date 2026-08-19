@@ -127,7 +127,7 @@
                     android:clipToPadding="false"
                     app:chipSpacingHorizontal="8dp"
                     app:singleLine="true"
-                    app:singleSelection="true">
+                    app:singleSelection="false">
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_hide_empty"
@@ -144,6 +144,15 @@
                         android:layout_height="wrap_content"
                         android:checked="false"
                         android:text="@string/multiplayer_hide_full_rooms"
+                        app:chipCornerRadius="16dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_hide_locked"
+                        style="@style/Widget.Material3.Chip.Suggestion.Elevated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"
+                        android:text="@string/multiplayer_hide_locked_rooms"
                         app:chipCornerRadius="16dp" />
                 </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>

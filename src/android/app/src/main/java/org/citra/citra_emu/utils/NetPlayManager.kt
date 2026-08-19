@@ -131,12 +131,20 @@ object NetPlayManager {
         adapterRefreshListener = listener
     }
 
-    fun getUsername(): String {
+    fun getUsername(context: Context = CitraApplication.appContext): String {
         SystemSaveGame.load()
-        return SystemSaveGame.getUsername()
+        val systemUsername = SystemSaveGame.getUsername()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        return prefs.getString("NetPlayUsername", systemUsername) ?: systemUsername
     }
 
-    fun isUsernameValid(): Boolean = getUsername().matches(usernameRegex)
+    fun setUsername(context: Context = CitraApplication.appContext, name: String) {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        prefs.edit().putString("NetPlayUsername", name).apply()
+    }
+
+    fun isUsernameValid(context: Context = CitraApplication.appContext): Boolean =
+        getUsername(context).matches(usernameRegex)
 
     fun getRoomAddress(activity: Activity): String {
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)

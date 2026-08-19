@@ -531,15 +531,6 @@ class NetPlayDialog(context: Context) : BottomSheetDialog(context) {
                 context.getString(R.string.multiplayer_max_players_value, value.toInt())
         }
 
-        binding.username.setOnClickListener {
-            Toast.makeText(
-                it.context,
-                it.context.getString(R.string.username_uses_system),
-                Toast.LENGTH_LONG
-            ).show()
-            true
-        }
-
         binding.btnConfirm.setOnClickListener {
             if (!NetPlayManager.isUsernameValid()) {
                 Toast.makeText(
@@ -599,6 +590,7 @@ class NetPlayDialog(context: Context) : BottomSheetDialog(context) {
                     }
 
                     if (result == 0) {
+                        NetPlayManager.setUsername(activity, username)
                         NetPlayManager.setRoomPort(activity, portStr)
                         if (!isCreateRoom) NetPlayManager.setRoomAddress(activity, ipAddress)
                         Toast.makeText(

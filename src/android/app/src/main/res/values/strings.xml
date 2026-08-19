@@ -1136,6 +1136,7 @@
     <string name="multiplayer_password_protected">Password protected room</string>
     <string name="multiplayer_hide_full_rooms">Hide Full Rooms</string>
     <string name="multiplayer_hide_empty_rooms">Hide Empty Rooms</string>
+    <string name="multiplayer_hide_locked_rooms">Hide Locked Rooms</string>
     <string name="multiplayer_tap_refresh_to_check_again">Tap refresh to check again</string>
     <string name="multiplayer_search_public_lobbies">Search Public Lobbies...</string>
     <string name="multiplayer_game_name">Preferred Games</string>
