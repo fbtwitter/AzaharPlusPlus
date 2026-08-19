@@ -464,6 +464,25 @@ static bool FindUniqueCryptoKeyIV(const std::string& filename, UniqueCryptoFileI
     return false;
 }
 
+// Returns the hex digest string (not just key/iv) of whichever known digest decrypts
+// `filename` to a readable header, or an empty string if none match. Used by the
+// Azahar-encryption removal/revert tooling, which needs the digest itself to reference
+// the file's associated crypto state.
+static std::string findDigest(const std::string& filename) {
+    std::map<std::string, int> digests;
+    loadDigests(digests);
+
+    std::vector<u8> key;
+    std::vector<u8> iv;
+    for (const auto& [sdigest, _] : digests) {
+        if (testDigest(sdigest, filename, key, iv)) {
+            return sdigest;
+        }
+    }
+
+    return "";
+}
+
 bool IsUniqueCryptoFile(FileUtil::IOFileBase* file, UniqueCryptoFileID id) {
     std::vector<u8> key;
     std::vector<u8> iv;
