@@ -50,7 +50,7 @@ public:
         INSERT_PADDING_BYTES(0x42);
         std::array<LimitEntry, 0x8> limits;
     };
-    static_assert(sizeof(Body) == 0x210, "Ticket body structure size is wrong");
+    static_assert(sizeof(Body) == 0x164, "Ticket body structure size is wrong");
 #pragma pack(pop)
 
     Loader::ResultStatus DoTitlekeyFixup();
