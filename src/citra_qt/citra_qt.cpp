@@ -2312,7 +2312,7 @@ void GMainWindow::ConnectMenuEvents() {
     connect_menu(ui->action_Connect_Artic, &GMainWindow::OnMenuConnectArticBase);
     connect_menu(ui->action_Remove_Azahar_Encryption, &GMainWindow::OnMenuRemoveAzaharEncryption);
     connect_menu(ui->action_Revert_Encryption_Removal, &GMainWindow::OnMenuRevertEncryptionRemoval);
-//    connect_menu(ui->action_Setup_System_Files, &GMainWindow::OnMenuSetUpSystemFiles);
+    connect_menu(ui->action_Setup_System_Files, &GMainWindow::OnMenuSetUpSystemFiles);
     for (u32 region = 0; region < Core::NUM_SYSTEM_TITLE_REGIONS; region++) {
         connect_menu(ui->menu_Download_System_Files->actions().at(region),
                      [this, region] { OnDownloadSystemFilesMenu(region); });

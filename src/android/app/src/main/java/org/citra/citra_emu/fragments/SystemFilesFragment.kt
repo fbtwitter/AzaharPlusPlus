@@ -4,33 +4,39 @@
 
 package org.citra.citra_emu.fragments
 
-import android.content.res.Resources
+import android.content.DialogInterface
 import android.os.Bundle
-import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.android.material.textview.MaterialTextView
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.citra.citra_emu.CitraApplication
 import org.citra.citra_emu.HomeNavigationDirections
 import org.citra.citra_emu.NativeLibrary
 import org.citra.citra_emu.R
-import org.citra.citra_emu.activities.EmulationActivity
+import org.citra.citra_emu.databinding.DialogSoftwareKeyboardBinding
 import org.citra.citra_emu.databinding.FragmentSystemFilesBinding
 import org.citra.citra_emu.features.settings.SettingKeys
 import org.citra.citra_emu.features.settings.model.Settings
@@ -38,41 +44,19 @@ import org.citra.citra_emu.model.Game
 import org.citra.citra_emu.utils.SystemSaveGame
 import org.citra.citra_emu.viewmodel.GamesViewModel
 import org.citra.citra_emu.viewmodel.HomeViewModel
-import org.citra.citra_emu.viewmodel.SystemFilesViewModel
 
 class SystemFilesFragment : Fragment() {
     private var _binding: FragmentSystemFilesBinding? = null
     private val binding get() = _binding!!
 
     private val homeViewModel: HomeViewModel by activityViewModels()
-    private val systemFilesViewModel: SystemFilesViewModel by activityViewModels()
     private val gamesViewModel: GamesViewModel by activityViewModels()
 
     private val regionStartSring = "RegionStart"
-    private lateinit var regionValues: IntArray
-
-    private val systemTypeDropdown = DropdownItem(R.array.systemFileTypeValues)
-    private val systemRegionDropdown = DropdownItem(R.array.systemFileRegionValues)
-
-    private val SYS_TYPE = "SysType"
-    private val REGION = "Region"
-    private val REGION_START = "RegionStart"
 
     private val homeMenuMap: MutableMap<String, String> = mutableMapOf()
-
-    private val WARNING_SHOWN = "SystemFilesWarningShown"
-
-    private class DropdownItem(val valuesId: Int) : AdapterView.OnItemClickListener {
-        var position = 0
-
-        fun getValue(resources: Resources): Int {
-            return resources.getIntArray(valuesId)[position]
-        }
-
-        override fun onItemClick(p0: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            this.position = position
-        }
-    }
+    private var setupStateCached: BooleanArray? = null
+    private lateinit var regionValues: IntArray
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,61 +78,15 @@ class SystemFilesFragment : Fragment() {
         homeViewModel.setNavigationVisibility(visible = false, animated = true)
         homeViewModel.setStatusBarShadeVisibility(visible = false)
 
-        val preferences = PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
-        if (!preferences.getBoolean(WARNING_SHOWN, false)) {
-            MessageDialogFragment.newInstance(
-                R.string.home_menu_warning,
-                R.string.home_menu_warning_description
-            ).show(childFragmentManager, MessageDialogFragment.TAG)
-            preferences.edit()
-                .putBoolean(WARNING_SHOWN, true)
-                .apply()
-        }
-
-        binding.toolbarSystemFiles.setNavigationOnClickListener {
-            binding.root.findNavController().popBackStack()
-        }
-
         // TODO: Remove workaround for text filtering issue in material components when fixed
         // https://github.com/material-components/material-components-android/issues/1464
-        binding.dropdownSystemType.isSaveEnabled = false
-        binding.dropdownSystemRegion.isSaveEnabled = false
         binding.dropdownSystemRegionStart.isSaveEnabled = false
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                systemFilesViewModel.shouldRefresh.collect {
-                    if (it) {
-                        reloadUi()
-                        systemFilesViewModel.setShouldRefresh(false)
-                    }
-                }
-            }
-        }
 
         reloadUi()
         if (savedInstanceState != null) {
-            setDropdownSelection(
-                binding.dropdownSystemType,
-                systemTypeDropdown,
-                savedInstanceState.getInt(SYS_TYPE)
-            )
-            setDropdownSelection(
-                binding.dropdownSystemRegion,
-                systemRegionDropdown,
-                savedInstanceState.getInt(REGION)
-            )
             binding.dropdownSystemRegionStart
                 .setText(savedInstanceState.getString(regionStartSring), false)
         }
-
-        setInsets()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(SYS_TYPE, systemTypeDropdown.position)
-        outState.putInt(REGION, systemRegionDropdown.position)
-        outState.putString(REGION_START, binding.dropdownSystemRegionStart.text.toString())
     }
 
     override fun onResume() {
@@ -159,6 +97,41 @@ class SystemFilesFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         SystemSaveGame.save()
+    }
+
+    private fun showProgressDialog(
+        main_title: CharSequence,
+        main_text: CharSequence
+    ): AlertDialog? {
+        val context = requireContext()
+        val progressIndicator = CircularProgressIndicator(context).apply {
+            isIndeterminate = true
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER // Center the progress indicator
+            ).apply {
+                setMargins(50, 50, 50, 50) // Add margins (left, top, right, bottom)
+            }
+        }
+
+        val pleaseWaitText = MaterialTextView(context).apply {
+            text = main_text
+        }
+
+        val container = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(40, 40, 40, 40) // Optional: Add padding to the entire layout
+            addView(pleaseWaitText)
+            addView(progressIndicator)
+        }
+
+        return MaterialAlertDialogBuilder(context)
+            .setTitle(main_title)
+            .setView(container)
+            .setCancelable(false)
+            .show()
     }
 
     private fun reloadUi() {
@@ -352,33 +325,6 @@ class SystemFilesFragment : Fragment() {
             }
         }
 
-        if (!NativeLibrary.areKeysAvailable()) {
-            binding.apply {
-                systemType.isEnabled = false
-                systemRegion.isEnabled = false
-                buttonDownloadHomeMenu.isEnabled = false
-                textKeysMissing.visibility = View.VISIBLE
-                textKeysMissingHelp.visibility = View.VISIBLE
-                textKeysMissingHelp.text =
-                    Html.fromHtml(getString(R.string.how_to_get_keys), Html.FROM_HTML_MODE_LEGACY)
-                textKeysMissingHelp.movementMethod = LinkMovementMethod.getInstance()
-            }
-        } else {
-            populateDownloadOptions()
-        }
-
-        binding.buttonDownloadHomeMenu.setOnClickListener {
-            val titleIds = NativeLibrary.getSystemTitleIds(
-                systemTypeDropdown.getValue(resources),
-                systemRegionDropdown.getValue(resources)
-            )
-
-            DownloadSystemFilesDialogFragment.newInstance(titleIds).show(
-                childFragmentManager,
-                DownloadSystemFilesDialogFragment.TAG
-            )
-        }
-
         populateHomeMenuOptions()
         binding.buttonStartHomeMenu.setOnClickListener {
             val menuPath = homeMenuMap[binding.dropdownSystemRegionStart.text.toString()]!!
@@ -390,51 +336,6 @@ class SystemFilesFragment : Fragment() {
             val action = HomeNavigationDirections.actionGlobalEmulationActivity(menu)
             binding.root.findNavController().navigate(action)
         }
-    }
-
-    private fun populateDropdown(
-        dropdown: MaterialAutoCompleteTextView,
-        valuesId: Int,
-        dropdownItem: DropdownItem
-    ) {
-        val valuesAdapter = ArrayAdapter.createFromResource(
-            requireContext(),
-            valuesId,
-            R.layout.support_simple_spinner_dropdown_item
-        )
-        dropdown.setAdapter(valuesAdapter)
-        dropdown.onItemClickListener = dropdownItem
-    }
-
-    private fun setDropdownSelection(
-        dropdown: MaterialAutoCompleteTextView,
-        dropdownItem: DropdownItem,
-        selection: Int
-    ) {
-        if (dropdown.adapter != null) {
-            dropdown.setText(dropdown.adapter.getItem(selection).toString(), false)
-        }
-        dropdownItem.position = selection
-    }
-
-    private fun populateDownloadOptions() {
-        populateDropdown(binding.dropdownSystemType, R.array.systemFileTypes, systemTypeDropdown)
-        populateDropdown(
-            binding.dropdownSystemRegion,
-            R.array.systemFileRegions,
-            systemRegionDropdown
-        )
-
-        setDropdownSelection(
-            binding.dropdownSystemType,
-            systemTypeDropdown,
-            systemTypeDropdown.position
-        )
-        setDropdownSelection(
-            binding.dropdownSystemRegion,
-            systemRegionDropdown,
-            systemRegionDropdown.position
-        )
     }
 
     private fun populateHomeMenuOptions() {
@@ -461,30 +362,4 @@ class SystemFilesFragment : Fragment() {
             binding.dropdownSystemRegionStart.setText(availableMenus.keys.first(), false)
         }
     }
-
-    private fun setInsets() =
-        ViewCompat.setOnApplyWindowInsetsListener(
-            binding.root
-        ) { _: View, windowInsets: WindowInsetsCompat ->
-            val barInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val cutoutInsets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout())
-
-            val leftInsets = barInsets.left + cutoutInsets.left
-            val rightInsets = barInsets.right + cutoutInsets.right
-
-            val mlpAppBar = binding.toolbarSystemFiles.layoutParams as ViewGroup.MarginLayoutParams
-            mlpAppBar.leftMargin = leftInsets
-            mlpAppBar.rightMargin = rightInsets
-            binding.toolbarSystemFiles.layoutParams = mlpAppBar
-
-            val mlpScrollSystemFiles =
-                binding.scrollSystemFiles.layoutParams as ViewGroup.MarginLayoutParams
-            mlpScrollSystemFiles.leftMargin = leftInsets
-            mlpScrollSystemFiles.rightMargin = rightInsets
-            binding.scrollSystemFiles.layoutParams = mlpScrollSystemFiles
-
-            binding.scrollSystemFiles.updatePadding(bottom = barInsets.bottom)
-
-            windowInsets
-        }
 }

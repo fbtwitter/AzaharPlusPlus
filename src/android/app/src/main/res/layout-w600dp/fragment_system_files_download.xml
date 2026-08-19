@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- FILE MODIFIED BY AzaharPlus APRIL 2025 -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -18,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_back"
-            app:title="@string/system_files" />
+            app:title="@string/system_files_download" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -51,23 +52,6 @@
                     android:layout_marginTop="16dp"
                     android:text="@string/download_system_files"
                     android:textAlignment="viewStart" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/system_type"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/system_type"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                        android:id="@+id/dropdown_system_type"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="none" />
-
-                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/system_region"
