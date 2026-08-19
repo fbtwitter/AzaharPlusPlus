@@ -140,6 +140,7 @@ std::unique_ptr<FileUtil::IOFileBase> NCCHContainer::AutoOpenNCCHNCSD(
         // 1st: Crypto file
         if (HW::UniqueData::IsUniqueCryptoFile(file.get(),
                                                HW::UniqueData::UniqueCryptoFileID::NCCH)) {
+            LOG_DEBUG(Service_FS, "NCCH file has console unique crypto");
             file = HW::UniqueData::OpenUniqueCryptoFile(std::move(file), "rb",
                                                         HW::UniqueData::UniqueCryptoFileID::NCCH);
             if (has_ncch_magic(file.get())) {
@@ -267,10 +268,6 @@ Loader::ResultStatus NCCHContainer::Load() {
         // Verify we are loading the correct file type...
         if (FileUtil::MakeMagic('N', 'C', 'C', 'H') != ncch_header.magic) {
             return Loader::ResultStatus::ErrorInvalidFormat;
-        }
-
-        if (file->IsCrypto()) {
-            LOG_DEBUG(Service_FS, "NCCH file has console unique crypto");
         }
 
         has_header = true;
