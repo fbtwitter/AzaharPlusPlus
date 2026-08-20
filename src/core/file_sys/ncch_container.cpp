@@ -224,6 +224,11 @@ Loader::ResultStatus NCCHContainer::LoadHeader() {
 
     LOG_DEBUG(Service_FS, "NCCH type: {}", file->GetType().to_string());
 
+    if (!ncch_header.no_crypto) {
+        // Encrypted NCCH are not supported
+        return Loader::ResultStatus::ErrorEncrypted;
+    }
+
     has_header = true;
     return Loader::ResultStatus::Success;
 }
