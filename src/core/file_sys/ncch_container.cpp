@@ -840,12 +840,6 @@ Loader::ResultStatus NCCHContainer::ReadRomFS(std::shared_ptr<RomFSReader>& romf
 }
 
 Loader::ResultStatus NCCHContainer::DumpRomFS(const std::string& target_path) {
-    if (file->GetType().HasType(FileUtil::IOType::Type::CryptoFile)) {
-        LOG_ERROR(Service_FS, "File {}, built-in romfs dumping of eShop titles is not allowed.",
-                  file->Filename());
-        return Loader::ResultStatus::ErrorEncrypted;
-    }
-
     std::shared_ptr<RomFSReader> direct_romfs;
     Loader::ResultStatus result = ReadRomFS(direct_romfs, false);
     if (result != Loader::ResultStatus::Success)
