@@ -16,6 +16,7 @@
 #include "core/loader/loader.h"
 #include "core/movie.h"
 #include "core/savestate.h"
+#include "core/savestate_data.h"
 #include "network/network.h"
 
 namespace Core {
@@ -72,6 +73,14 @@ static bool ValidateSaveState(const CSTHeader& header, SaveStateInfo& info, u64 
         info.status = SaveStateInfo::ValidationStatus::OK;
     } else {
         info.build_name = build_name;
+        if (info.build_name.empty()) {
+            // Save states from old Citra builds predate the embedded build name; fall back to
+            // looking the revision up in the historical hash -> release name table.
+            const auto it = hash_to_version.find(revision);
+            if (it != hash_to_version.end()) {
+                info.build_name = it->second;
+            }
+        }
         info.build_version = build_version;
 
         info.status = Common::g_build_version == info.build_version

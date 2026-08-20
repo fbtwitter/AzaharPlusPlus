@@ -34,6 +34,7 @@
     <string name="select_games_folder">Select Applications Folder</string>
     <string name="select_games_folder_description">Allows Azahar to populate the application list</string>
     <string name="about">About</string>
+    <string name="logo_attribution">The Azahar logo is the property of PabloMK7 and angyartanddraw</string>
     <string name="clear_streetpass_config">Clear StreetPass Configuration</string>
     <string name="citra_description">An open-source 3DS emulator</string>
     <string name="about_description">Build version, credits, and more</string>

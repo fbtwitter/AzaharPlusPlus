@@ -316,6 +316,8 @@ private slots:
     void OnCoreError(Core::System::ResultStatus, std::string);
     /// Called whenever a user selects Help->About Azahar
     void OnMenuAboutCitra();
+    /// Called whenever a user selects Help->libzip licence
+    void OnMenuLibzipLicence();
 
     void OnLanguageChanged(const QString& locale);
     void OnMouseActivity();

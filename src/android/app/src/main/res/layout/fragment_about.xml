@@ -50,6 +50,21 @@
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="28dp" />
 
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.Material3.TitleMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="28dp"
+                android:textAlignment="viewStart"
+                android:text="@string/logo_attribution" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="28dp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
