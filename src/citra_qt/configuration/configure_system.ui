@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>535</width>
+    <width>653</width>
     <height>619</height>
    </rect>
   </property>
@@ -14,11 +14,26 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_scrollbar">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QScrollArea" name="scrollArea">
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>660</width>
        <height>480</height>
       </size>
      </property>
@@ -49,14 +64,14 @@
             <string>System Settings</string>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="1" column="0">
+            <item row="0" column="0">
              <widget class="QCheckBox" name="toggle_new_3ds">
               <property name="text">
                <string>Enable New 3DS mode</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
+            <item row="1" column="0">
              <widget class="QCheckBox" name="toggle_lle_applets">
               <property name="text">
                <string>Use LLE applets (if installed)</string>
@@ -563,93 +578,6 @@ installed applications.</string>
               </property>
              </widget>
             </item>
-            <item row="18" column="0">
-             <widget class="QLabel" name="label_nus_download">
-              <property name="text">
-               <string>Download System Files from Nintendo servers</string>
-              </property>
-             </widget>
-            </item>
-            <item row="18" column="1">
-             <widget class="QWidget" name="body_nus_download">
-              <layout class="QHBoxLayout" name="horizontalLayout_nus_download">
-               <item>
-                <widget class="QComboBox" name="combo_download_set">
-                 <item>
-                  <property name="text">
-                   <string>Minimal</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Old 3DS</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>New 3DS</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="combo_download_region">
-                 <item>
-                  <property name="text">
-                   <string>JPN</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>USA</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>EUR</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>AUS</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>CHN</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>KOR</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>TWN</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="button_start_download">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="layoutDirection">
-                  <enum>Qt::RightToLeft</enum>
-                 </property>
-                 <property name="text">
-                  <string>Download</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
            </layout>
           </widget>
          </item>
@@ -799,43 +727,43 @@ installed applications.</string>
                   </layout>
                  </widget>
                 </item>
-                <item row="4" column="0">
-                 <widget class="QLabel" name="label_ct_cert">
-                  <property name="text">
-                   <string>CTCert</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="4" column="1">
-                 <widget class="QWidget" name="ct_cert">
-                  <layout class="QHBoxLayout" name="horizontalLayout_ct_cert">
-                   <item>
-                    <widget class="QLabel" name="label_ct_cert_status">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="button_ct_cert">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="layoutDirection">
-                      <enum>Qt::RightToLeft</enum>
-                     </property>
-                     <property name="text">
-                      <string>Choose</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
                </layout>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_movable">
+              <property name="text">
+               <string>movable.sed</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QWidget" name="movable">
+              <layout class="QHBoxLayout" name="horizontalLayout_movable">
+               <item>
+                <widget class="QLabel" name="label_movable_status">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_movable">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="layoutDirection">
+                  <enum>Qt::RightToLeft</enum>
+                 </property>
+                 <property name="text">
+                  <string>Choose</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
@@ -885,6 +813,7 @@ installed applications.</string>
   <tabstop>spinBox_play_coins</tabstop>
   <tabstop>spinBox_steps_per_hour</tabstop>
   <tabstop>button_regenerate_console_id</tabstop>
+  <tabstop>button_regenerate_mac</tabstop>
  </tabstops>
  <resources/>
  <connections/>
