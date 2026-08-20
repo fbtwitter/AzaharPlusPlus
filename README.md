@@ -3,6 +3,7 @@
 Each version is the same as the corresponding version of Azahar except for these features:
 - Compatibility with all game files. If a file works with any Citra fork, it works with AzaharPlusPlus.
 - Ability to download system files from official servers. No need for an actual 3DS.
+- Compatibility with older CPUs (no SSE4.2 required)
 - Compatibility with Android 9
 - ZipPass: A new way to exchange StreetPass data through zip files
 - Built in cheats
@@ -130,7 +131,6 @@ Below are the minimum requirements to run Azahar:
 Operating System: Windows 10 (64-bit), MacOS 13.4 (Ventura), or modern 64-bit Linux
 CPU: x86-64/ARM64 CPU (Windows for ARM not supported).
      Single core performance higher than 1,800 on Passmark.
-     SSE4.2 required on x86_64.
 GPU: OpenGL 4.3 or Vulkan 1.1 support
 Memory: 2GB of RAM. 4GB is recommended
 ```
