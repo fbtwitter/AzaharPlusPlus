@@ -1,8 +1,0 @@
-{
-  "name": "azaharplusplus",
-  "version-string": "1.0.0",
-  "builtin-baseline": "06d00ffa491e4668627728f14b891d22c6fea146",
-  "dependencies": [
-    "zlib"
-  ]
-}
