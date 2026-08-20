@@ -2601,11 +2601,14 @@ bool GMainWindow::LoadROM(const QString& filename) {
             break;
 
         case Core::System::ResultStatus::ErrorLoader_ErrorEncrypted: {
-            QMessageBox::critical(this, tr("Encrypted application"),
-                                  tr("Encrypted applications are not supported.<br/>"
-                                     "<a "
-                                     "href='https://azahar-emu.org/blog/game-loading-changes/'>"
-                                     "Please check our blog for more info.</a>"));
+            QMessageBox::critical(
+                this, tr("Encrypted application"),
+                tr("This application is encrypted and no decryption keys are available.<br/><br/>"
+                   "To play encrypted dumps, copy <tt>boot9.bin</tt>, <tt>aes_keys.txt</tt> and "
+                   "<tt>seeddb.bin</tt> from your own console into the <tt>sysdata</tt> folder of "
+                   "your user directory. The <tt>DumpKeys.gm9</tt> GodMode9 script included with "
+                   "this emulator, under <tt>dist/dumpkeys</tt>, generates these files.<br/><br/>"
+                   "Alternatively, redump the application in decrypted form."));
             break;
         }
         case Core::System::ResultStatus::ErrorLoader_ErrorInvalidFormat:
