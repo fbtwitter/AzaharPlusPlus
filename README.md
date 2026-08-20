@@ -3,7 +3,6 @@
 Each version is the same as the corresponding version of Azahar except for these features:
 - Compatibility with all game files. If a file works with any Citra fork, it works with AzaharPlusPlus.
 - Ability to download system files from official servers. No need for an actual 3DS.
-- Compatibility with older CPUs (no SSE4.2 required)
 - Compatibility with Android 9
 - ZipPass: A new way to exchange StreetPass data through zip files
 - Built in cheats
