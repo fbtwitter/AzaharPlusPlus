@@ -1,4 +1,5 @@
 #include "core/zip_pass.h"
+#include "common/android_utils.h"
 #include "common/logging/log.h"
 #include "common/file_util.h"
 #include "common/common_paths.h"
