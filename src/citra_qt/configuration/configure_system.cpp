@@ -436,7 +436,7 @@ void ConfigureSystem::ReadSystemSettings() {
     ui->spinBox_play_coins->setValue(play_coin);
 
     // set firmware download region
-    ui->combo_download_region->setCurrentIndex(static_cast<int>(cfg->GetRegionValue()));
+    ui->combo_download_region->setCurrentIndex(static_cast<int>(cfg->GetRegionValue(false)));
 
     // Refresh secure data status
     RefreshSecureDataStatus();
