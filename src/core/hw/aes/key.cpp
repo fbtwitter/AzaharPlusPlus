@@ -1,4 +1,6 @@
-// Copyright 2017-2026 Citra Emulator Project / Azahar Emulator Project
+//FILE MODIFIED BY AzaharPlus APRIL 2025
+
+// Copyright Citra Emulator Project / Azahar Emulator Project
 // Licensed under GPLv2 or any later version
 // Refer to the license.txt file included.
 
@@ -34,10 +36,10 @@ namespace {
 // On a real 3DS the generation for the normal key is hardware based, and thus the constant can't
 // get dumped. Generated normal keys are also not accessible on a 3DS. The used formula for
 // calculating the constant is a software implementation of what the hardware generator does.
-//AESKey generator_constant;
+AESKey generator_constant;
 
-constexpr AESKey generator_constant = {{0x1F, 0xF9, 0xE9, 0xAA, 0xC5, 0xFE, 0x04, 0x08, 0x02, 0x45,
-                                        0x91, 0xDC, 0x5D, 0x52, 0x76, 0x8A}};
+//constexpr AESKey generator_constant = {{0x1F, 0xF9, 0xE9, 0xAA, 0xC5, 0xFE, 0x04, 0x08, 0x02, 0x45,
+//                                        0x91, 0xDC, 0x5D, 0x52, 0x76, 0x8A}};
 
 AESKey HexToKey(const std::string& hex) {
     if (hex.size() < 32) {
@@ -222,7 +224,6 @@ void LoadBootromKeys() {
     }
 }
 
-#ifdef todotodo
 void LoadPresetKeys() {
     auto s = GetKeysStream();
 
@@ -231,6 +232,8 @@ void LoadPresetKeys() {
     while (!s.eof()) {
         std::string line;
         std::getline(s, line);
+
+	//	LOG_ERROR(HW_AES, "Dump key '{}'", line);
 
         // Ignore empty or commented lines.
         if (line.empty() || line.starts_with("#")) {
@@ -361,8 +364,8 @@ void LoadPresetKeys() {
         }
     }
 }
-#else
-void LoadPresetKeys() {
+
+void LoadPresetAesKeys() {
     const std::string filepath = FileUtil::GetUserPath(FileUtil::UserPath::SysDataDir) + AES_KEYS;
     FileUtil::CreateFullPath(filepath); // Create path if not already created
 
@@ -466,7 +469,6 @@ void LoadPresetKeys() {
         }
     }
 }
-#endif
 
 } // namespace
 
@@ -481,8 +483,6 @@ std::istringstream GetKeysStream() {
         return std::istringstream(std::string(std::istreambuf_iterator<char>(file), {}));
     } else {
 #ifdef ENABLE_BUILTIN_KEYBLOB
-        // The key data is encrypted in the source to prevent easy access to it for unintended
-        // purposes.
         std::vector<u8> kiv(16);
         std::string s(default_keys_enc_size, ' ');
         CryptoPP::CBC_Mode<CryptoPP::AES>::Decryption(kiv.data(), kiv.size(), kiv.data())
@@ -502,7 +502,9 @@ void InitKeys(bool force) {
     initialized = true;
     HW::RSA::InitSlots();
     LoadBootromKeys();
+	generator_constant = HexToKey("1ff9e9aac5fe0408024591dc5d52768a");
     LoadPresetKeys();
+    LoadPresetAesKeys();
     movable_key.SetKeyX(key_slots[0x35].x);
     movable_cmac.SetKeyX(key_slots[0x35].x);
 
