@@ -18,6 +18,7 @@
 #include "core/loader/loader.h"
 #include "core/system_titles.h"
 #include <map>
+#include <mutex>
 #include <sstream>
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
@@ -33,6 +34,7 @@ static FileSys::OTP otp;
 static FileSys::Certificate ct_cert;
 static MovableSedFull movable;
 static bool movable_signature_valid = false;
+static std::mutex load_mutex;
 
 static const unsigned char dummy_secure_info[sizeof(SecureInfoA)] = {
 	0x44, 0x55, 0x4D, 0x4D, 0x59, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 
@@ -226,6 +228,8 @@ SecureDataLoadStatus LoadLocalFriendCodeSeedB() {
 }
 
 SecureDataLoadStatus LoadOTP() {
+    std::scoped_lock lock(load_mutex);
+
     if (otp.Valid()) {
         return SecureDataLoadStatus::Loaded;
     }
@@ -369,11 +373,21 @@ SecureInfoA& GetSecureInfoA() {
 LocalFriendCodeSeedB& GetLocalFriendCodeSeedB() {
     LoadLocalFriendCodeSeedB();
 
+    if (!FileUtil::Exists(GetLocalFriendCodeSeedBPath()) &&
+        !Settings::values.enable_required_online_lle_modules.GetValue()) {
+        local_friend_code_seed_b.Invalidate();
+    }
+
     return local_friend_code_seed_b;
 }
 
 FileSys::Certificate& GetCTCert() {
     LoadOTP();
+
+    if (!FileUtil::Exists(GetOTPPath()) &&
+        !Settings::values.enable_required_online_lle_modules.GetValue()) {
+        ct_cert.Invalidate();
+    }
 
     return ct_cert;
 }
@@ -381,10 +395,20 @@ FileSys::Certificate& GetCTCert() {
 FileSys::OTP& GetOTP() {
     LoadOTP();
 
+    if (!FileUtil::Exists(GetOTPPath()) &&
+        !Settings::values.enable_required_online_lle_modules.GetValue()) {
+        otp.Invalidate();
+    }
+
     return otp;
 }
 MovableSedFull& GetMovableSed() {
     LoadMovable();
+
+    if (!FileUtil::Exists(GetMovablePath()) &&
+        !Settings::values.enable_required_online_lle_modules.GetValue()) {
+        movable.Invalidate();
+    }
 
     return movable;
 }
