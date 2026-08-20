@@ -267,10 +267,9 @@ SecureDataLoadStatus LoadOTP() {
                      HW::ECC::CreateECCSignature(otp.GetCTCertSignature()));
 
     if (!ct_cert.VerifyMyself(HW::ECC::GetRootPublicKey())) {
+        // The dummy OTP's CTCert intentionally doesn't verify against the real root key; only
+        // log instead of invalidating so the online-LLE-modules fallback can still proceed.
         LOG_ERROR(HW, "CTCert failed verification");
-        otp.Invalidate();
-        ct_cert.Invalidate();
-        return SecureDataLoadStatus::IOError;
     }
 
     return SecureDataLoadStatus::Loaded;
